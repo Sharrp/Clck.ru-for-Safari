@@ -1,11 +1,12 @@
-safari.application.addEventListener("validate", handleValidateEvent, false);
+safari.application.addEventListener("popover", handlePopoverEvent, false);
 
-function handleValidateEvent(event)
+function handlePopoverEvent(event)
 {
 	if (safari.extension.settings.url)
 	{
 		pasteLink(safari.extension.settings.url);
 		safari.extension.settings.url = null;
+		event.target.popover = null;
 	}
 }
 

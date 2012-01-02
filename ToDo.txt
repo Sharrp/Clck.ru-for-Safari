@@ -2,5 +2,9 @@ ToDo:
 - Add history (cache + user functionality)
 
 Bugs:
-- Hide popover when tab changed (closed)
-- Clear settings.url after displaying link
+- Google SERP has wrong safari.application.activeBrowserWindow.activeTab.url if you started your search from google's main page
+
+Done:
+- Made toolbar button unavailable for empty/[top sites] tabs
+- Hide popover when tab changed
+- Fixed bug with sometimes incorrect url in popover

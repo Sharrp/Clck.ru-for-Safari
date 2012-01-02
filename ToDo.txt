@@ -1,0 +1,6 @@
+ToDo:
+- Add history (cache + user functionality)
+
+Bugs:
+- Hide popover when tab changed (closed)
+- Clear settings.url after displaying link

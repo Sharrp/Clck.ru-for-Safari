@@ -1,0 +1,7 @@
+input[type=text] 
+{ 
+    width: 230px;
+    text-align:center;
+    font-size:20px;
+    position:relative;
+}

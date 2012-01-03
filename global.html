@@ -6,11 +6,11 @@ safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("open", hidePopover, true);
 safari.application.addEventListener("deactivate", hidePopover, true);
 
-myPop = safari.extension.createPopover("myPopoverID", safari.extension.baseURI + "popover.html", 252, 49);
+popover = safari.extension.createPopover("shortURLPopover", safari.extension.baseURI + "popover.html", 252, 49);
 
 function shortURL(url)
 {
-	// return 'clck.ru/TZ4N';
+	return url.substring(url.length-5);
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("GET", "http://clck.ru/--?url=" + url, false);
 	xmlHttp.send(null);
@@ -28,11 +28,12 @@ function validateHandler(event)
 
 function performCommand(event)
 {
+    // event.target.popover = nil;
     switch (event.command) 
     {
     case "short-url":
-    	safari.extension.settings.url = shortURL(safari.application.activeBrowserWindow.activeTab.url);
-    	event.target.popover = myPop;
+    	safari.extension.settings.url = shortURL(event.target.browserWindow.activeTab.url);
+    	event.target.popover = popover;
     	event.target.showPopover();
         break;
     }
@@ -40,7 +41,7 @@ function performCommand(event)
 
 function hidePopover(event)
 {
-    myPop.hide();
+    popover.hide();
 }
 
 </script>

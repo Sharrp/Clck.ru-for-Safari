@@ -2,7 +2,7 @@ ToDo:
 - Add history (cache + user functionality)
 
 Bugs:
-- Google SERP has wrong safari.application.activeBrowserWindow.activeTab.url if you started your search from google's main page
+Fixed?
 
 Done:
 - Made toolbar button unavailable for empty/[top sites] tabs

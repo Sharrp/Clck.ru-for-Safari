@@ -6,16 +6,31 @@ safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("open", hidePopover, true);
 safari.application.addEventListener("deactivate", hidePopover, true);
 
+safari.application.addEventListener("message", handleMessage, false);
+
 popover = safari.extension.createPopover("shortURLPopover", safari.extension.baseURI + "popover.html", 252, 49);
 
+// Short url with clck.ru
 function shortURL(url)
 {
-	return url.substring(url.length-5);
+	// return url.substring(url.length-8);
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("GET", "http://clck.ru/--?url=" + url, false);
 	xmlHttp.send(null);
 	return xmlHttp.responseText;
 }
+
+// Show popover with shortened url of current page
+function viewPopoverWithUrl(url)
+{
+    safari.extension.settings.url = url;
+    event.target.popover = popover;
+    event.target.showPopover();
+}
+
+//
+// Events handling
+//
 
 function validateHandler(event)
 {
@@ -28,13 +43,12 @@ function validateHandler(event)
 
 function performCommand(event)
 {
-    // event.target.popover = nil;
     switch (event.command) 
     {
     case "short-url":
-    	safari.extension.settings.url = shortURL(event.target.browserWindow.activeTab.url);
-    	event.target.popover = popover;
-    	event.target.showPopover();
+        safari.extension.settings.url = shortURL(event.target.browserWindow.activeTab.url);
+        event.target.popover = popover;
+        event.target.showPopover();
         break;
     }
 }
@@ -42,6 +56,24 @@ function performCommand(event)
 function hidePopover(event)
 {
     popover.hide();
+}
+
+function handleMessage(event)
+{
+    if(event.name === "hotkey")
+    {   
+        safari.extension.settings.url = shortURL(safari.application.activeBrowserWindow.activeTab.url);
+        var items = safari.extension.toolbarItems;
+        for (var i = 0; i < items.length; ++i)
+        {
+            if (items[i].browserWindow == safari.application.activeBrowserWindow)
+            {
+                items[i].popover = popover;
+                items[i].showPopover();
+                break;   
+            }
+        }
+    }
 }
 
 </script>

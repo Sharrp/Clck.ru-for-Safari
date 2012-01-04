@@ -1,10 +1,10 @@
 ToDo:
 - Add history (cache + user functionality)
+- Customizable shortcut
 
 Bugs:
-Fixed?
+- Annoying beep when shortcut pressed
 
 Done:
-- Made toolbar button unavailable for empty/[top sites] tabs
-- Hide popover when tab changed
-- Fixed bug with sometimes incorrect url in popover
+- Added injected.js for shortcuts support
+- Ctrl + S shows popover (temporary solution, cause windows will not happy to it)

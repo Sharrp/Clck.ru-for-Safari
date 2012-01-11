@@ -1,23 +1,77 @@
 <!DOCTYPE HTML>
 <script>
 
+const MAX_NUMBER_OF_LINKS = 100;
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
 safari.application.addEventListener("validate", validateHandler, false);
 safari.application.addEventListener("command", performCommand, false);
 safari.application.addEventListener("open", hidePopover, true);
 safari.application.addEventListener("deactivate", hidePopover, true);
-
 safari.application.addEventListener("message", handleMessage, false);
 
 popover = safari.extension.createPopover("shortURLPopover", safari.extension.baseURI + "popover.html", 252, 49);
 
+// Short links cache
+var linksHistory; // dictionary: url -> info (shortUrl, date, title)
+var linksIndex; // array: index -> url
+var oldestLinkId;
+
 // Short url with clck.ru
-function shortURL(url)
+function shortWithClck(url)
 {
 	// return url.substring(url.length-8);
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open("GET", "http://clck.ru/--?url=" + url, false);
 	xmlHttp.send(null);
 	return xmlHttp.responseText;
+}
+
+// Try to get short url from history. When not found - shorts through clck.ru
+function shortURL(url)
+{
+    var shortUrl;
+    // alert(url + " # " + linksHistory)
+    if (url in linksHistory) // we already shortened this link
+    {
+        shortUrl = linksHistory[url][0];
+    }
+    else // get short url from clck.ru
+    {
+        shortUrl = shortWithClck(url);
+        if (linksIndex.length < MAX_NUMBER_OF_LINKS)
+        {
+            linksIndex[linksIndex.length] = url;
+        }
+        else
+        {
+            var oldKey = linksIndex[oldestLinkId];
+            delete linksHistory[oldKey];
+            linksIndex[oldestLinkId] = url;
+            ++oldestLinkId;
+            if (oldestLinkId == MAX_NUMBER_OF_LINKS)
+            {
+                oldestLinkId = 0;
+            }
+        }
+
+    }
+    
+    linksHistory[url] = packCurrentPageWitUrl(shortUrl);
+    
+    saveCache();
+
+    return shortUrl;
+}
+
+// Returns array with shortUrl, title and date/time
+function packCurrentPageWitUrl(shortUrl)
+{
+    var currentTime = new Date()
+    var dateTime = currentTime.getDate() + " " + monthNames[currentTime.getMonth()] +  " " + 
+        (1900 + currentTime.getYear()) + ", " + currentTime.getHours() + ":" + currentTime.getMinutes();
+    var title = safari.application.activeBrowserWindow.activeTab.title;
+    return [shortUrl, title, dateTime];
 }
 
 // Show popover with shortened url of current page
@@ -38,6 +92,8 @@ function validateHandler(event)
     {
         // Disable the button if there is no URL loaded in the tab.
         event.target.disabled = !event.target.browserWindow.activeTab.url;
+
+        loadCache();
     }
 }
 
@@ -74,6 +130,43 @@ function handleMessage(event)
             }
         }
     }
+}
+
+
+//
+// Cache
+//
+
+function loadCache()
+{
+    if (!linksHistory)
+    {
+        var savedObject = localStorage.getItem('cache');
+        alert(savedObject)
+        if (savedObject)
+        {
+            linksHistory = JSON.parse(savedObject);
+
+            savedObject = localStorage.getItem('index');
+            linksIndex = JSON.parse(savedObject);
+
+            oldestLinkId = localStorage.getItem('oldestLinkId');
+            // localStorage.setItem('history', JSON.stringify('[]'));
+        }
+        else
+        {
+            linksHistory = {};
+            oldestLinkId = 0;
+            linksIndex = [];
+        }
+    }
+}
+
+function saveCache()
+{
+    localStorage.setItem('cache', JSON.stringify(linksHistory));
+    localStorage.setItem('index', JSON.stringify(linksIndex));
+    localStorage.setItem('oldestLinkId', oldestLinkId);
 }
 
 </script>

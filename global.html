@@ -31,7 +31,6 @@ function shortWithClck(url)
 function shortURL(url)
 {
     var shortUrl;
-    // alert(url + " # " + linksHistory)
     if (url in linksHistory) // we already shortened this link
     {
         shortUrl = linksHistory[url][0];
@@ -54,7 +53,6 @@ function shortURL(url)
                 oldestLinkId = 0;
             }
         }
-
     }
     
     linksHistory[url] = packCurrentPageWitUrl(shortUrl);
@@ -142,7 +140,6 @@ function loadCache()
     if (!linksHistory)
     {
         var savedObject = localStorage.getItem('cache');
-        alert(savedObject)
         if (savedObject)
         {
             linksHistory = JSON.parse(savedObject);
@@ -151,7 +148,6 @@ function loadCache()
             linksIndex = JSON.parse(savedObject);
 
             oldestLinkId = localStorage.getItem('oldestLinkId');
-            // localStorage.setItem('history', JSON.stringify('[]'));
         }
         else
         {
